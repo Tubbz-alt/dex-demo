@@ -36,7 +36,7 @@ import (
 	"github.com/cosmos/cosmos-sdk/x/auth"
 	"github.com/cosmos/cosmos-sdk/x/bank"
 	distr "github.com/cosmos/cosmos-sdk/x/distribution"
-	"github.com/cosmos/cosmos-sdk/x/genaccounts"
+	// "github.com/cosmos/cosmos-sdk/x/genaccounts"
 	"github.com/cosmos/cosmos-sdk/x/genutil"
 	"github.com/cosmos/cosmos-sdk/x/mint"
 	"github.com/cosmos/cosmos-sdk/x/params"
@@ -57,7 +57,7 @@ var (
 	DefaultNodeHome = os.ExpandEnv("$HOME/.dexd")
 
 	ModuleBasics = module.NewBasicManager(
-		genaccounts.AppModuleBasic{},
+		// genaccounts.AppModuleBasic{},
 		genutil.AppModuleBasic{},
 		auth.AppModuleBasic{},
 		bank.AppModuleBasic{},
@@ -172,7 +172,7 @@ func NewDexApp(
 	app.BankKeeper = bank.NewBaseKeeper(app.AccountKeeper, bankSubspace, bank.DefaultCodespace, app.ModuleAccountAddrs())
 	app.SupplyKeeper = supply.NewKeeper(app.Cdc, keys[supply.StoreKey], app.AccountKeeper, app.BankKeeper, maccPerms)
 	stakingKeeper := staking.NewKeeper(
-		app.Cdc, keys[staking.StoreKey], tkeys[staking.TStoreKey], app.SupplyKeeper, stakingSubspace, staking.DefaultCodespace,
+		app.Cdc, keys[staking.StoreKey], app.SupplyKeeper, stakingSubspace, staking.DefaultCodespace,
 	)
 	app.MintKeeper = mint.NewKeeper(app.Cdc, keys[mint.StoreKey], mintSubspace, &stakingKeeper, app.SupplyKeeper, auth.FeeCollectorName)
 	app.DistrKeeper = distr.NewKeeper(app.Cdc, keys[distr.StoreKey], distrSubspace, &stakingKeeper,
@@ -210,7 +210,7 @@ func NewDexApp(
 	)
 
 	app.mm = module.NewManager(
-		genaccounts.NewAppModule(app.AccountKeeper),
+		// genaccounts.NewAppModule(app.AccountKeeper),
 		genutil.NewAppModule(app.AccountKeeper, app.StakingKeeper, app.BaseApp.DeliverTx),
 		auth.NewAppModule(app.AccountKeeper),
 		bank.NewAppModule(app.BankKeeper, app.AccountKeeper),
@@ -218,7 +218,7 @@ func NewDexApp(
 		distr.NewAppModule(app.DistrKeeper, app.SupplyKeeper),
 		mint.NewAppModule(app.MintKeeper),
 		slashing.NewAppModule(app.SlashingKeeper, app.StakingKeeper),
-		staking.NewAppModule(app.StakingKeeper, app.DistrKeeper, app.AccountKeeper, app.SupplyKeeper),
+		staking.NewAppModule(app.StakingKeeper, app.AccountKeeper, app.SupplyKeeper),
 		asset.NewAppModule(app.AssetKeeper, app.BankKeeper),
 		market.NewAppModule(app.MarketKeeper),
 		order.NewAppModule(app.OrderKeeper),
@@ -229,7 +229,8 @@ func NewDexApp(
 	app.mm.SetOrderEndBlockers(staking.ModuleName)
 
 	app.mm.SetOrderInitGenesis(
-		genaccounts.ModuleName, distr.ModuleName, staking.ModuleName, auth.ModuleName,
+		// genaccounts.ModuleName, distr.ModuleName, staking.ModuleName, auth.ModuleName,
+		distr.ModuleName, staking.ModuleName, auth.ModuleName,
 		bank.ModuleName, slashing.ModuleName, mint.ModuleName,
 		supply.ModuleName, genutil.ModuleName, assettypes.ModuleName, markettypes.ModuleName,
 	)
